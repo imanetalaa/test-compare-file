@@ -77,13 +77,20 @@ def test_detailed_comparison(files):
     # Comparaison ligne par ligne et colonne par colonne
     detailed_result = compare_content(content_file1, content_file2)
     
-    # Affichage des résultats détaillés
+    # Création d'un message de rapport formaté
+    report_lines = []
     for line, comparison in detailed_result.items():
-        print(f'{line}: {comparison}')
+        report_lines.append(f'{line}: {comparison}')
     
+    # Joindre toutes les lignes pour le rapport
+    report_message = "\n".join(report_lines)
+
+    # Afficher le message dans la sortie standard (ou l'envoyer à Xray)
+    print(report_message)
+
     # Vérifier les différences
     differences_found = any('ko' in result for result in detailed_result.values())
-    assert not differences_found, f"Les fichiers {file1} et {file2} ont des différences : {detailed_result}"
+    assert not differences_found, f"Les fichiers {file1} et {file2} ont des différences :\n{report_message}"
 
 def test_column_comparisons(files):
     """Test chaque colonne pour les différences."""
