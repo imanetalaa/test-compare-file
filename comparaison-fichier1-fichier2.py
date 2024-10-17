@@ -18,17 +18,17 @@ def compare_content(file1_lines, file2_lines):
     assert len(file1_lines) == len(file2_lines), (
         f"Les fichiers ont un nombre de lignes différent : {len(file1_lines)} vs {len(file2_lines)}"
     )
-
+    
     # Comparer ligne par ligne
     for i, (line1, line2) in enumerate(zip(file1_lines, file2_lines), 1):
         columns1 = line1.strip().split()
         columns2 = line2.strip().split()
-
+        
         # Vérifier que chaque ligne a le même nombre de colonnes
         assert len(columns1) == len(columns2), (
             f"Différence dans le nombre de colonnes à la ligne {i}:\n{file1_lines[i-1]} vs {file2_lines[i-1]}"
         )
-
+        
         comparison_results = []
         # Comparer colonne par colonne
         for col1, col2 in zip(columns1, columns2):
@@ -52,10 +52,10 @@ def files():
 def test_files_exist(files):
     """Teste si les fichiers existent."""
     file1, file2 = files
-
+    
     # Affiche les chemins des fichiers pour le débogage
     print(f"Fichier 1: {file1}, Fichier 2: {file2}")
-
+    
     # Vérifiez que les fichiers existent avant de les lire
     assert os.path.exists(file1), f"Le fichier {file1} n'existe pas."
     assert os.path.exists(file2), f"Le fichier {file2} n'existe pas."
@@ -63,7 +63,7 @@ def test_files_exist(files):
 def test_shallow_comparison(files):
     """Teste si les fichiers sont identiques via une comparaison simple (shallow)."""
     file1, file2 = files
-
+    
     # Comparaison simple avec filecmp (shallow comparison)
     shallow_result = filecmp.cmp(file1, file2, shallow=False)
     assert shallow_result, f"Les fichiers {file1} et {file2} sont différents."
@@ -71,11 +71,11 @@ def test_shallow_comparison(files):
 def test_detailed_comparison(files):
     """Compare les fichiers avec une vérification ligne par ligne et colonne par colonne."""
     file1, file2 = files
-
+    
     # Lire le contenu des fichiers
     content_file1 = read_file(file1)
     content_file2 = read_file(file2)
-
+    
     # Comparaison ligne par ligne et colonne par colonne
     detailed_result = compare_content(content_file1, content_file2)
     
@@ -86,3 +86,4 @@ def test_detailed_comparison(files):
     # Vérifier les différences
     differences_found = any('ko' in result for result in detailed_result.values())
     assert not differences_found, f"Les fichiers {file1} et {file2} ont des différences : {detailed_result}"
+
