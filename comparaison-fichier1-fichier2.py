@@ -32,7 +32,7 @@ def compare_content(file1_lines, file2_lines):
         # Comparer colonne par colonne
         previous_col_value = None  # pour stocker la valeur de la colonne précédente
         for j, (col1, col2) in enumerate(zip(columns1, columns2)):
-            column_key = f"Colonne {j + 1} \t"
+            column_key = f"Colonne {j + 1}"
             
             # Si nous avons une valeur précédente, l'utiliser dans le message d'erreur
             if previous_col_value is not None and col1 != col2:
@@ -46,7 +46,7 @@ def compare_content(file1_lines, file2_lines):
             previous_col_value = col1  # mise à jour avec la colonne actuelle
     
     # Supprimer les lignes qui n'ont pas de différences
-    results = {k: v for k, v in results.items()}
+    results = {k: v for k, v in results.items() if v}  # Filtrer les résultats vides
     
     return results
 
@@ -87,9 +87,11 @@ def test_detailed_comparison(files):
     # Comparaison ligne par ligne et colonne par colonne
     detailed_result = compare_content(content_file1, content_file2)
     
-    # Affichage des résultats détaillés (uniquement les KO)
-    for column, comparison in detailed_result.items():
-        print(f'{column}: {comparison}')
+    # Affichage des résultats détaillés
+    if detailed_result:
+        print("Différences trouvées :")
+        for column, comparison in detailed_result.items():
+            print(f'{column}: {comparison}')
     
     # Vérifier les différences
     differences_found = any(result for result in detailed_result.values())
