@@ -121,16 +121,53 @@ def test_detailed_comparison(files):
 
     # Création d'un message de rapport formaté
     report_lines = []
+    
+    # Variable pour stocker la valeur précédente de la colonne
+    previous_col_value = None
+    
     for line, comparison in detailed_result.items():
+        # Ajout de la logique pour inclure la valeur de la colonne précédente en cas de différence
         report_lines.append(f'{line}: {comparison}')
+        if 'ko' in comparison:
+            if previous_col_value is not None:
+                report_lines[-1] = f'{previous_col_value} - {comparison}'
+        # Mise à jour de la valeur précédente pour la prochaine ligne
+        previous_col_value = comparison
 
     # Joindre toutes les lignes pour le rapport
     report_message = "\n".join(report_lines)
+    
     # Afficher le message dans la sortie standard (ou l'envoyer à Xray)
     print(report_message)
+    
     # Vérifier les différences
     differences_found = any('ko' in result for result in detailed_result.values())
     assert not differences_found, f"Les fichiers {file1} et {file2} ont des différences :\n{report_message}"
+
+
+# def test_detailed_comparison(files):
+#     """Compare les fichiers avec une vérification ligne par ligne et colonne par colonne."""
+#     file1, file2 = files
+
+#     # Lire le contenu des fichiers
+#     content_file1 = read_file(file1)
+#     content_file2 = read_file(file2)
+
+#     # Comparaison ligne par ligne et colonne par colonne
+#     detailed_result = compare_content(content_file1, content_file2)
+
+#     # Création d'un message de rapport formaté
+#     report_lines = []
+#     for line, comparison in detailed_result.items():
+#         report_lines.append(f'{line}: {comparison}')
+
+#     # Joindre toutes les lignes pour le rapport
+#     report_message = "\n".join(report_lines)
+#     # Afficher le message dans la sortie standard (ou l'envoyer à Xray)
+#     print(report_message)
+#     # Vérifier les différences
+#     differences_found = any('ko' in result for result in detailed_result.values())
+#     assert not differences_found, f"Les fichiers {file1} et {file2} ont des différences :\n{report_message}"
 
 def test_column_comparisons(files):
     """Test chaque colonne pour les différences."""
