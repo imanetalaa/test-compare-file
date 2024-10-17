@@ -120,14 +120,9 @@ def test_columns_comparisons(files):
     ko_results = {key: value for key, value in detailed_result.items() if 'ko' in value}
 
     # Vérifiez chaque colonne individuellement et affichez uniquement les différences
-    if ko_results:
-        print("\nLes différences trouvées dans les colonnes :\n")
-        for column, result in ko_results.items():
-            # Ajout d'un saut de ligne après chaque résultat
-            print(f"{column}: {result}\n")
-    else:
-        print("Aucune différence trouvée entre les colonnes.")
+    assert not ko_results, (
+        f"Des différences existent dans les colonnes :\n"
+        + "\n".join([f"{key}: {value}" for key, value in ko_results.items()])
+    )
 
-    # Si des différences "ko" existent, lever une AssertionError pour chaque
-    assert not ko_results, f"Des différences existent dans les colonnes :\n{ko_results}"
 
