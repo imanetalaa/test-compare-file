@@ -21,8 +21,8 @@ def compare_content(file1_lines, file2_lines):
     
     # Comparer ligne par ligne
     for i, (line1, line2) in enumerate(zip(file1_lines, file2_lines), 1):
-        columns1 = line1.strip().split(' ')  # Modifier ici si un autre séparateur est utilisé
-        columns2 = line2.strip().split(' ')  # Modifier ici si un autre séparateur est utilisé
+        columns1 = line1.strip().split()  # Modifier ici si un autre séparateur est utilisé
+        columns2 = line2.strip().split()  # Modifier ici si un autre séparateur est utilisé
         
         # Vérifier que chaque ligne a le même nombre de colonnes
         assert len(columns1) == len(columns2), (
