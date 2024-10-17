@@ -77,25 +77,32 @@ def test_shallow_comparison(files):
     shallow_result = filecmp.cmp(file1, file2, shallow=False)
     assert shallow_result, f"Les fichiers {file1} et {file2} sont différents."
 
-def test_detailed_comparison(files):
-    """Compare les fichiers avec une vérification ligne par ligne et colonne par colonne."""
-    file1, file2 = files
+def compare_content(file1_lines, file2_lines):
+    results = {}
     
-    # Lire le contenu des fichiers
-    content_file1 = read_file(file1)
-    content_file2 = read_file(file2)
+    assert len(file1_lines) == len(file2_lines), (
+        f"Les fichiers ont un nombre de lignes différent : {len(file1_lines)} vs {len(file2_lines)}"
+    )
     
-    # Comparaison ligne par ligne et colonne par colonne
-    detailed_result = compare_content(content_file1, content_file2)
+    for i, (line1, line2) in enumerate(zip(file1_lines, file2_lines), 1):
+        columns1 = line1.strip().split()
+        columns2 = line2.strip().split()
+        
+        assert len(columns1) == len(columns2), (
+            f"Différence dans le nombre de colonnes à la ligne {i}:\n{file1_lines[i-1]} vs {file2_lines[i-1]}"
+        )
+        
+        previous_col_value = None
+        for j, (col1, col2) in enumerate(zip(columns1, columns2)):
+            if col1 != col2:
+                # On ne se soucie pas de la valeur précédente ici
+                col_key = f'Colonne {j + 1}'
+                result_value = f"{previous_col_value};{col1};{col2}" if previous_col_value else f"- {col1};{col2}"
+                results[col_key] = result_value
+            
+            previous_col_value = col1
     
-    # Affichage des résultats détaillés (uniquement les KO)
-    for column, comparison in detailed_result.items():
-        # Juste afficher la comparaison sans "Colonne"
-        print(comparison)  # Format souhaité
-    
-    # Vérifier les différences
-    differences_found = any(result for result in detailed_result.values())
-    assert not differences_found, f"Les fichiers {file1} et {file2} ont des différences : {detailed_result}"
+    return results
 
 # def test_detailed_comparison(files):
 #     """Compare les fichiers avec une vérification ligne par ligne et colonne par colonne."""
