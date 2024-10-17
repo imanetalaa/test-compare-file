@@ -104,3 +104,28 @@ def test_column_comparisons(files):
     for key, result in detailed_result.items():
         if 'ko' in result:
             assert False, f"Différence trouvée dans {key}: {result}"
+
+def test_columns_comparisons(files):
+    """Test chaque colonne pour afficher uniquement les différences."""
+    file1, file2 = files
+
+    # Lire le contenu des fichiers
+    content_file1 = read_file(file1)
+    content_file2 = read_file(file2)
+
+    # Comparaison ligne par ligne et colonne par colonne
+    detailed_result = compare_content(content_file1, content_file2)
+
+    # Filtrer uniquement les différences avec "ko"
+    ko_results = {key: value for key, value in detailed_result.items() if 'ko' in value}
+
+    # Vérifiez chaque colonne individuellement et affichez uniquement les différences
+    if ko_results:
+        print("\nLes différences trouvées dans les colonnes :")
+        for column, result in ko_results.items():
+            print(f"{column}: {result}")
+    else:
+        print("Aucune différence trouvée entre les colonnes.")
+
+    # Si des différences "ko" existent, lever une AssertionError pour chaque
+    assert not ko_results, f"Des différences existent dans les colonnes :\n{ko_results}"
