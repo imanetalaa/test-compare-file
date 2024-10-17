@@ -1,7 +1,7 @@
 import filecmp
 import pytest
 import os
-
+ 
 def read_file(file_path):
     """Lit le contenu d'un fichier et renvoie une liste de lignes."""
     with open(file_path, 'r') as f:
