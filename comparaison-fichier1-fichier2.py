@@ -7,38 +7,80 @@ def read_file(file_path):
     with open(file_path, 'r') as f:
         return f.readlines()
 
+# def compare_content(file1_lines, file2_lines):
+#     """
+#     Compare deux fichiers ligne par ligne et colonne par colonne.
+#     Retourne un dictionnaire avec chaque clé et ses valeurs suivies du statut 'OK' ou 'KO'.
+#     """
+#     results = {}
+
+#     # Vérifier que les deux fichiers ont le même nombre de lignes
+#     assert len(file1_lines) == len(file2_lines), (
+#         f"Les fichiers ont un nombre de lignes différent : {len(file1_lines)} vs {len(file2_lines)}"
+#     )
+
+#     # Comparer ligne par ligne
+#     for i, (line1, line2) in enumerate(zip(file1_lines, file2_lines), 1):
+#         columns1 = line1.strip().split()
+#         columns2 = line2.strip().split()
+
+#         # Vérifier que chaque ligne a le même nombre de colonnes
+#         assert len(columns1) == len(columns2), (
+#             f"Différence dans le nombre de colonnes à la ligne {i}:\n{file1_lines[i-1]} vs {file2_lines[i-1]}"
+#         )
+
+#         # Comparer colonne par colonne
+#         for j, (col1, col2) in enumerate(zip(columns1, columns2)):
+#             column_key = f"Ligne {i} Colonne {j+1}"
+#             if col1 != col2:
+#                 results[column_key] = f'{col1}:ko vs {col2}:ko'
+#             else:
+#                 results[column_key] = f'{col1}:ok'
+
+#     return results
+
 def compare_content(file1_lines, file2_lines):
     """
     Compare deux fichiers ligne par ligne et colonne par colonne.
     Retourne un dictionnaire avec chaque clé et ses valeurs suivies du statut 'OK' ou 'KO'.
     """
     results = {}
-
+    
     # Vérifier que les deux fichiers ont le même nombre de lignes
     assert len(file1_lines) == len(file2_lines), (
         f"Les fichiers ont un nombre de lignes différent : {len(file1_lines)} vs {len(file2_lines)}"
     )
-
+    
     # Comparer ligne par ligne
     for i, (line1, line2) in enumerate(zip(file1_lines, file2_lines), 1):
         columns1 = line1.strip().split()
         columns2 = line2.strip().split()
-
+        
         # Vérifier que chaque ligne a le même nombre de colonnes
         assert len(columns1) == len(columns2), (
             f"Différence dans le nombre de colonnes à la ligne {i}:\n{file1_lines[i-1]} vs {file2_lines[i-1]}"
         )
-
+        
         # Comparer colonne par colonne
+        previous_col_value = None  # pour stocker la valeur de la colonne précédente
         for j, (col1, col2) in enumerate(zip(columns1, columns2)):
-            column_key = f"Ligne {i} Colonne {j+1}"
-            if col1 != col2:
-                results[column_key] = f'{col1}:ko vs {col2}:ko'
+            column_key = f"Ligne {i} Colonne {j + 1}"
+            
+            # Si nous avons une valeur précédente, l'utiliser dans le message d'erreur
+            if previous_col_value is not None and col1 != col2:
+                results[column_key] = f'{previous_col_value} - {col1} - {col2}:ko'
             else:
-                results[column_key] = f'{col1}:ok'
-
+                # On stocke la valeur actuelle pour la prochaine itération
+                if col1 != col2:
+                    results[column_key] = f'- {col1} - {col2}:ko'
+                else:
+                    results[column_key] = f'{col1}:ok'
+                    
+            # Mettre à jour la valeur précédente pour la prochaine itération
+            previous_col_value = col1  # mise à jour avec la colonne actuelle
+    
     return results
-
+ 
 @pytest.fixture(scope='module')
 def files():
     """Renvoie les chemins des fichiers à tester."""
