@@ -87,23 +87,13 @@ def test_detailed_comparison(files):
     # Comparaison ligne par ligne et colonne par colonne
     detailed_result = compare_content(content_file1, content_file2)
     
-    # Affichage des résultats détaillés
-    if detailed_result:
-        print("\nDifférences trouvées :")
-        for column, comparison in detailed_result.items():
-            values = comparison.split(';')  # Diviser les valeurs pour afficher chaque partie
-            previous_value = values[0]
-            current_value1 = values[1]
-            current_value2 = values[2]
-            
-            print(f"Dans {column}:")
-            print(f"  Valeur précédente: {previous_value}")
-            print(f"  Valeur fichier 1: {current_value1}")
-            print(f"  Valeur fichier 2: {current_value2}\n")
-    
     # Vérifier les différences
-    differences_found = any(result for result in detailed_result.values())
-    assert not differences_found, f"Les fichiers {file1} et {file2} ont des différences : {detailed_result}"
+    if detailed_result:
+        differences_message = "Les fichiers {} et {} ont des différences :\n".format(file1, file2)
+        differences_message += "\n".join(detailed_result)
+        raise AssertionError(differences_message)
+    else:
+        print("Aucune différence trouvée.")
 
 
 # def test_detailed_comparison(files):
