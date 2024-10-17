@@ -10,9 +10,9 @@ def read_file(file_path):
 def compare_content(file1_lines, file2_lines):
     """
     Compare deux fichiers ligne par ligne et colonne par colonne.
-    Retourne une liste des différences sous forme de chaîne de caractères.
+    Retourne un dictionnaire avec chaque clé et ses valeurs suivies du statut 'KO'.
     """
-    results = []
+    results = {}
     
     # Vérifier que les deux fichiers ont le même nombre de lignes
     assert len(file1_lines) == len(file2_lines), (
@@ -32,7 +32,8 @@ def compare_content(file1_lines, file2_lines):
         # Comparer colonne par colonne
         for j, (col1, col2) in enumerate(zip(columns1, columns2)):
             if col1 != col2:
-                results.append(f"Ligne {i} Colonne {j + 1}: {col1}:{col2}")
+                column_key = f"Ligne {i} Colonne {j + 1}"
+                results[column_key] = f"{col1}:{col2}"
 
     return results
 
@@ -46,9 +47,6 @@ def files():
 def test_files_exist(files):
     """Teste si les fichiers existent."""
     file1, file2 = files
-    
-    # Affiche les chemins des fichiers pour le débogage
-    print(f"Fichier 1: {file1}, Fichier 2: {file2}")
     
     # Vérifiez que les fichiers existent avant de les lire
     assert os.path.exists(file1), f"Le fichier {file1} n'existe pas."
@@ -75,11 +73,9 @@ def test_detailed_comparison(files):
     
     # Vérifier les différences
     if detailed_result:
-        differences_message = f"Les fichiers {file1} et {file2} ont des différences :\n" + "\n".join(detailed_result)
+        differences_message = "Les fichiers {} et {} ont des différences :\n".format(file1, file2)
+        for column, comparison in detailed_result.items():
+            differences_message += f"  {column}: {comparison}\n"
         raise AssertionError(differences_message)
-    else:
-        print("Aucune différence trouvée.")
 
-# Pour exécuter les tests
-if __name__ == "__main__":
-    pytest.main()
+# Assurez-vous de définir les variables d'environnement RO et RP avant de lancer les tests.
