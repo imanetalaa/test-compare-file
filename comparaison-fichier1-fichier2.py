@@ -123,7 +123,7 @@ def test_columns_comparisons(files):
     if ko_results:
         print("\nLes différences trouvées dans les colonnes :")
         for column, result in ko_results.items():
-            print(f"{column}: {result}")
+            print(f"{column}: {result}\n")
     else:
         print("Aucune différence trouvée entre les colonnes.")
 
