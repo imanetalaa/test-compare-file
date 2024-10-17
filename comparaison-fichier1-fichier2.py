@@ -10,9 +10,9 @@ def read_file(file_path):
 def compare_content(file1_lines, file2_lines):
     """
     Compare deux fichiers ligne par ligne et colonne par colonne.
-    Retourne un dictionnaire avec chaque clé et ses valeurs suivies du statut 'KO'.
+    Retourne une liste des différences sous forme de chaîne de caractères.
     """
-    results = {}
+    results = []
     
     # Vérifier que les deux fichiers ont le même nombre de lignes
     assert len(file1_lines) == len(file2_lines), (
@@ -30,24 +30,10 @@ def compare_content(file1_lines, file2_lines):
         )
         
         # Comparer colonne par colonne
-        previous_col_value = None  # pour stocker la valeur de la colonne précédente
         for j, (col1, col2) in enumerate(zip(columns1, columns2)):
-            column_key = f"Colonne {j + 1}"
-            
-            # Si nous avons une valeur précédente, l'utiliser dans le message d'erreur
-            if previous_col_value is not None and col1 != col2:
-                results[column_key] = f'{previous_col_value};{col1};{col2}'
-            else:
-                # On ne conserve que les résultats KO
-                if col1 != col2:
-                    results[column_key] = f'{previous_col_value};{col1};{col2}' if previous_col_value else f'- {col1};{col2}'
-                    
-            # Mettre à jour la valeur précédente pour la prochaine itération
-            previous_col_value = col1  # mise à jour avec la colonne actuelle
-    
-    # Supprimer les lignes qui n'ont pas de différences
-    results = {k: v for k, v in results.items() if v}  # Filtrer les résultats vides
-    
+            if col1 != col2:
+                results.append(f"Ligne {i} Colonne {j + 1}: {col1}:{col2}")
+
     return results
 
 @pytest.fixture(scope='module')
@@ -89,31 +75,11 @@ def test_detailed_comparison(files):
     
     # Vérifier les différences
     if detailed_result:
-        differences_message = "Les fichiers {} et {} ont des différences :\n".format(file1, file2)
-        differences_message += "\n".join(detailed_result)
+        differences_message = f"Les fichiers {file1} et {file2} ont des différences :\n" + "\n".join(detailed_result)
         raise AssertionError(differences_message)
     else:
         print("Aucune différence trouvée.")
 
-
-# def test_detailed_comparison(files):
-#     """Compare les fichiers avec une vérification ligne par ligne et colonne par colonne."""
-#     file1, file2 = files
-    
-#     # Lire le contenu des fichiers
-#     content_file1 = read_file(file1)
-#     content_file2 = read_file(file2)
-    
-#     # Comparaison ligne par ligne et colonne par colonne
-#     detailed_result = compare_content(content_file1, content_file2)
-    
-#     # Affichage des résultats détaillés
-#     if detailed_result:
-#         print("Différences trouvées :")
-#         for column, comparison in detailed_result.items():
-#             print(f'{column}: {comparison}')
-    
-#     # Vérifier les différences
-#     differences_found = any(result for result in detailed_result.values())
-#     assert not differences_found, f"Les fichiers {file1} et {file2} ont des différences : {detailed_result}"
-
+# Pour exécuter les tests
+if __name__ == "__main__":
+    pytest.main()
