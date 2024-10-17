@@ -57,29 +57,29 @@ def test_files_exist(files):
     assert os.path.exists(file1), f"Le fichier {file1} n'existe pas."
     assert os.path.exists(file2), f"Le fichier {file2} n'existe pas."
 
-# def test_shallow_comparison(files):
-#     """Teste si les fichiers sont identiques via une comparaison simple (shallow)."""
-#     file1, file2 = files
+def test_shallow_comparison(files):
+    """Teste si les fichiers sont identiques via une comparaison simple (shallow)."""
+    file1, file2 = files
     
-#     # Comparaison simple avec filecmp (shallow comparison)
-#     shallow_result = filecmp.cmp(file1, file2, shallow=False)
-#     assert shallow_result, f"Les fichiers {file1} et {file2} sont différents."
+    # Comparaison simple avec filecmp (shallow comparison)
+    shallow_result = filecmp.cmp(file1, file2, shallow=False)
+    assert shallow_result, f"Les fichiers {file1} et {file2} sont différents."
 
-# def test_detailed_comparison(files):
-#     """Compare les fichiers avec une vérification ligne par ligne et colonne par colonne."""
-#     file1, file2 = files
+def test_detailed_comparison(files):
+    """Compare les fichiers avec une vérification ligne par ligne et colonne par colonne."""
+    file1, file2 = files
     
-#     # Lire le contenu des fichiers
-#     content_file1 = read_file(file1)
-#     content_file2 = read_file(file2)
+    # Lire le contenu des fichiers
+    content_file1 = read_file(file1)
+    content_file2 = read_file(file2)
     
-#     # Comparaison ligne par ligne et colonne par colonne
-#     detailed_result = compare_content(content_file1, content_file2)
+    # Comparaison ligne par ligne et colonne par colonne
+    detailed_result = compare_content(content_file1, content_file2)
     
-#     # Affichage des résultats détaillés
-#     for line, comparison in detailed_result.items():
-#         print(f'{line}: {comparison}')
+    # Affichage des résultats détaillés
+    for line, comparison in detailed_result.items():
+        print(f'{line}: {comparison}')
     
-#     # On pourrait lever une exception ici si on souhaite que le test échoue sur une différence
-#     differences_found = any('ko' in result for result in detailed_result.values())
-#     assert not differences_found, f"Les fichiers {file1} et {file2} ont des différences."
+    # On pourrait lever une exception ici si on souhaite que le test échoue sur une différence
+    differences_found = any('ko' in result for result in detailed_result.values())
+    assert not differences_found, f"Les fichiers {file1} et {file2} ont des différences."
