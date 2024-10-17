@@ -10,7 +10,7 @@ def read_file(file_path):
 def compare_content(file1_lines, file2_lines):
     """
     Compare deux fichiers ligne par ligne et colonne par colonne.
-    Retourne un dictionnaire avec chaque clé et ses valeurs suivies du statut 'OK' ou 'KO'.
+    Retourne un dictionnaire avec chaque clé et ses valeurs suivies du statut 'KO'.
     """
     results = {}
     
@@ -20,9 +20,10 @@ def compare_content(file1_lines, file2_lines):
     )
     
     # Comparer ligne par ligne
+    separator = os.environ.get('separateur')
     for i, (line1, line2) in enumerate(zip(file1_lines, file2_lines), 1):
-        columns1 = line1.strip().split()
-        columns2 = line2.strip().split()
+        columns1 = line1.strip().split(separator)
+        columns2 = line2.strip().split(separator)
         
         # Vérifier que chaque ligne a le même nombre de colonnes
         assert len(columns1) == len(columns2), (
@@ -30,21 +31,31 @@ def compare_content(file1_lines, file2_lines):
         )
         
         # Comparer colonne par colonne
+        previous_col_value = None  # pour stocker la valeur de la colonne précédente
         for j, (col1, col2) in enumerate(zip(columns1, columns2)):
-            column_key = f"Ligne {i} Colonne {j+1}"
-            if col1 != col2:
-                results[column_key] = f'{col1}:ko vs {col2}:ko'
+            column_key = f"Colonne {j + 1}"
+            
+            # Si nous avons une valeur précédente, l'utiliser dans le message d'erreur
+            if previous_col_value is not None and col1 != col2:
+                results[column_key] = f'{previous_col_value};{col1};{col2}'
             else:
-                results[column_key] = f'{col1}:ok'
-
+                # On ne conserve que les résultats KO
+                if col1 != col2:
+                    results[column_key] = f'{previous_col_value};{col1};{col2}' if previous_col_value else f'- {col1};{col2}'
+                    
+            # Mettre à jour la valeur précédente pour la prochaine itération
+            previous_col_value = col1  # mise à jour avec la colonne actuelle
+    
+    # Supprimer les lignes qui n'ont pas de différences
+    results = {k: v for k, v in results.items() if v}  # Filtrer les résultats vides
+    
     return results
 
 @pytest.fixture(scope='module')
 def files():
     """Renvoie les chemins des fichiers à tester."""
-    # Chemin du fichier 1
-    file1 = '/home/amine/dev/test-compare-file/file1.txt'
-    file2 = '/home/amine/dev/test-compare-file/file2.txt'
+    file1 = os.environ.get('RO')  # Chemin du premier fichier à tester
+    file2 = os.environ.get('RP')  # Chemin du second fichier à tester
     return file1, file2
 
 def test_files_exist(files):
@@ -78,24 +89,11 @@ def test_detailed_comparison(files):
     detailed_result = compare_content(content_file1, content_file2)
     
     # Affichage des résultats détaillés
-    for line, comparison in detailed_result.items():
-        print(f'{line}: {comparison}')
+    if detailed_result:
+        print("Différences trouvées :")
+        for column, comparison in detailed_result.items():
+            print(f'{column}: {comparison}')
     
     # Vérifier les différences
-    differences_found = any('ko' in result for result in detailed_result.values())
+    differences_found = any(result for result in detailed_result.values())
     assert not differences_found, f"Les fichiers {file1} et {file2} ont des différences : {detailed_result}"
-
-def test_column_comparisons(files):
-    """Test chaque colonne pour les différences."""
-    file1, file2 = files
-    
-    # Lire le contenu des fichiers
-    content_file1 = read_file(file1)
-    content_file2 = read_file(file2)
-
-    detailed_result = compare_content(content_file1, content_file2)
-    
-    # Vérifiez chaque ligne et colonne individuellement
-    for key, result in detailed_result.items():
-        if 'ko' in result:
-            assert False, f"Différence trouvée dans {key}: {result}"
