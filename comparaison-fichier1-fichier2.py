@@ -45,6 +45,7 @@ def compare_content(file1_lines, file2_lines):
     Retourne un dictionnaire avec chaque clé et ses valeurs suivies du statut 'OK' ou 'KO'.
     """
     results = {}
+    separator = os.environ.get('separateur')
     
     # Vérifier que les deux fichiers ont le même nombre de lignes
     assert len(file1_lines) == len(file2_lines), (
@@ -53,8 +54,8 @@ def compare_content(file1_lines, file2_lines):
     
     # Comparer ligne par ligne
     for i, (line1, line2) in enumerate(zip(file1_lines, file2_lines), 1):
-        columns1 = line1.strip().split()
-        columns2 = line2.strip().split()
+        columns1 = line1.strip().split(separator)
+        columns2 = line2.strip().split(separator)
         
         # Vérifier que chaque ligne a le même nombre de colonnes
         assert len(columns1) == len(columns2), (
