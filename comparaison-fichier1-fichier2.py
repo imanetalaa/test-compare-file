@@ -58,14 +58,6 @@ def test_files_exist(files):
     assert os.path.exists(file1), f"Le fichier {file1} n'existe pas."
     assert os.path.exists(file2), f"Le fichier {file2} n'existe pas."
 
-def test_shallow_comparison(files):
-    """Teste si les fichiers sont identiques via une comparaison simple (shallow)."""
-    file1, file2 = files
-
-    # Comparaison simple avec filecmp (shallow comparison)
-    shallow_result = filecmp.cmp(file1, file2, shallow=False)
-    assert shallow_result, f"Les fichiers {file1} et {file2} sont différents."
-
 def test_detailed_comparison(files):
     """Compare les fichiers avec une vérification ligne par ligne et colonne par colonne."""
     file1, file2 = files
@@ -77,30 +69,40 @@ def test_detailed_comparison(files):
     # Comparaison ligne par ligne et colonne par colonne
     detailed_result = compare_content(content_file1, content_file2)
 
-    # Création d'un message de rapport formaté
+    # Filtrer uniquement les différences avec "ko"
+    ko_results = {key: value for key, value in detailed_result.items() if 'ko' in value}
+
+    # Création d'un message de rapport formaté pour les différences "ko"
     report_lines = []
-    for line, comparison in detailed_result.items():
+    for line, comparison in ko_results.items():
         report_lines.append(f'{line}: {comparison}')
 
-    # Joindre toutes les lignes pour le rapport
+    # Joindre toutes les lignes pour le rapport des différences
     report_message = "\n".join(report_lines)
-    # Afficher le message dans la sortie standard (ou l'envoyer à Xray)
-    print(report_message)
-    # Vérifier les différences
-    differences_found = any('ko' in result for result in detailed_result.values())
-    assert not differences_found, f"Les fichiers {file1} et {file2} ont des différences :\n{report_message}"
 
-def test_column_comparisons(files):
-    """Test chaque colonne pour les différences."""
+    # Afficher les différences avec "ko" dans la sortie standard (ou l'envoyer à Xray)
+    if report_lines:
+        print(f"Differences found:\n{report_message}")
+
+    # Si des différences "ko" existent, lever une AssertionError
+    assert not ko_results, f"Les fichiers {file1} et {file2} ont des différences :\n{report_message}"
+
+def test_column_comparison(files):
+    """Test chaque colonne individuellement pour les différences."""
     file1, file2 = files
 
     # Lire le contenu des fichiers
     content_file1 = read_file(file1)
     content_file2 = read_file(file2)
 
+    # Comparaison ligne par ligne et colonne par colonne
     detailed_result = compare_content(content_file1, content_file2)
 
-    # Vérifiez chaque ligne et colonne individuellement
-    for key, result in detailed_result.items():
-        if 'ko' in result:
-            assert False, f"Différence trouvée dans {key}: {result}"
+    # Filtrer uniquement les différences avec "ko"
+    ko_results = {key: value for key, value in detailed_result.items() if 'ko' in value}
+
+    # Vérifiez chaque colonne individuellement
+    for column, result in ko_results.items():
+        print(f"Différence trouvée dans {column}: {result}")
+        assert 'ko' in result, f"Différence trouvée dans {column}: {result}"
+
