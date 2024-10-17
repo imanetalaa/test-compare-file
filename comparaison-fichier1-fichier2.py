@@ -10,10 +10,8 @@ def read_file(file_path):
 def compare_content(file1_lines, file2_lines):
     """
     Compare deux fichiers ligne par ligne et colonne par colonne.
-    Retourne un dictionnaire avec chaque clé et ses valeurs suivies du statut 'OK' ou 'KO'.
+    Affiche chaque colonne avec le statut 'OK' ou 'KO'.
     """
-    results = {}
-    
     # Vérifier que les deux fichiers ont le même nombre de lignes
     assert len(file1_lines) == len(file2_lines), (
         f"Les fichiers ont un nombre de lignes différent : {len(file1_lines)} vs {len(file2_lines)}"
@@ -29,22 +27,18 @@ def compare_content(file1_lines, file2_lines):
             f"Différence dans le nombre de colonnes à la ligne {i}:\n{file1_lines[i-1]} vs {file2_lines[i-1]}"
         )
         
-        comparison_results = []
+        print(f'Comparaison de la Ligne {i}:')
         # Comparer colonne par colonne
-        for col1, col2 in zip(columns1, columns2):
+        for col_index, (col1, col2) in enumerate(zip(columns1, columns2)):
             if col1 == col2:
-                comparison_results.append(f'{col1}:ok')
+                print(f'  Colonne {col_index + 1}: {col1}: ok')
             else:
-                comparison_results.append(f'{col1}:ko')
-        
-        # Sauvegarder le résultat pour chaque ligne
-        results[f"Ligne {i}"] = ', '.join(comparison_results)
-    
-    return results
+                print(f'  Colonne {col_index + 1}: {col1}: ko (vs {col2})')
 
 @pytest.fixture(scope='module')
 def files():
     """Renvoie les chemins des fichiers à tester."""
+    # Chemin du fichier 1
     file1 = os.environ.get('RO')  # Chemin du premier fichier à tester
     file2 = os.environ.get('RP')  # Chemin du second fichier à tester
     return file1, file2
@@ -77,13 +71,8 @@ def test_detailed_comparison(files):
     content_file2 = read_file(file2)
     
     # Comparaison ligne par ligne et colonne par colonne
-    detailed_result = compare_content(content_file1, content_file2)
-    
-    # Affichage des résultats détaillés
-    for line, comparison in detailed_result.items():
-        print(f'{line}: {comparison}')
-    
-    # Vérifier les différences
-    differences_found = any('ko' in result for result in detailed_result.values())
-    assert not differences_found, f"Les fichiers {file1} et {file2} ont des différences : {detailed_result}"
+    compare_content(content_file1, content_file2)
 
+    # Vérifier les différences
+    differences_found = any('ko' in result for line in content_file1 for result in line.split())
+    assert not differences_found, f"Les fichiers {file1} et {file2} ont des différences."
