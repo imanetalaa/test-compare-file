@@ -53,6 +53,9 @@ def test_files_exist(files):
     """Teste si les fichiers existent."""
     file1, file2 = files
     
+    # Affiche les chemins des fichiers pour le débogage
+    print(f"Fichier 1: {file1}, Fichier 2: {file2}")
+    
     # Vérifiez que les fichiers existent avant de les lire
     assert os.path.exists(file1), f"Le fichier {file1} n'existe pas."
     assert os.path.exists(file2), f"Le fichier {file2} n'existe pas."
@@ -80,6 +83,7 @@ def test_detailed_comparison(files):
     for line, comparison in detailed_result.items():
         print(f'{line}: {comparison}')
     
-    # On pourrait lever une exception ici si on souhaite que le test échoue sur une différence
+    # Vérifier les différences
     differences_found = any('ko' in result for result in detailed_result.values())
-    assert not differences_found, f"Les fichiers {file1} et {file2} ont des différences."
+    assert not differences_found, f"Les fichiers {file1} et {file2} ont des différences : {detailed_result}"
+
