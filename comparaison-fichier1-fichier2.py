@@ -74,3 +74,8 @@ def test_detailed_comparison(files):
     # Vérifier les différences
     if detailed_result:
         differences_message = "Les fichiers {} et {} ont des différences :\n".format(file1, file2)
+        for column, comparison in detailed_result.items():
+            differences_message += f"  {column}: {comparison}\n"
+        raise AssertionError(differences_message)
+
+# Assurez-vous de définir les variables d'environnement RO et RP avant de lancer les tests.
