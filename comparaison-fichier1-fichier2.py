@@ -20,7 +20,7 @@ def compare_content(file1_lines, file2_lines):
     )
     
     # Comparer ligne par ligne
-    separator = os.environ.get('separator')
+    separator = os.environ.get('separateur')
     for i, (line1, line2) in enumerate(zip(file1_lines, file2_lines), 1):
         columns1 = line1.strip().split(separator)
         columns2 = line2.strip().split(separator)
