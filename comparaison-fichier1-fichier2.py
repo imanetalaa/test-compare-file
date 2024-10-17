@@ -20,9 +20,10 @@ def compare_content(file1_lines, file2_lines):
     )
     
     # Comparer ligne par ligne
+    separator = os.environ.get('separator')
     for i, (line1, line2) in enumerate(zip(file1_lines, file2_lines), 1):
-        columns1 = line1.strip().split()
-        columns2 = line2.strip().split()
+        columns1 = line1.strip().split(separator)
+        columns2 = line2.strip().split(separator)
         
         # Vérifier que chaque ligne a le même nombre de colonnes
         assert len(columns1) == len(columns2), (
