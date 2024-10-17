@@ -29,24 +29,22 @@ def compare_content(file1_lines, file2_lines):
             f"Différence dans le nombre de colonnes à la ligne {i}:\n{file1_lines[i-1]} vs {file2_lines[i-1]}"
         )
         
-        comparison_results = []
         # Comparer colonne par colonne
-        for col1, col2 in zip(columns1, columns2):
-            if col1 == col2:
-                comparison_results.append(f'{col1}:ok')
+        for j, (col1, col2) in enumerate(zip(columns1, columns2)):
+            column_key = f"Ligne {i} Colonne {j+1}"
+            if col1 != col2:
+                results[column_key] = f'{col1}:ko vs {col2}:ko'
             else:
-                comparison_results.append(f'{col1}:ko')
-        
-        # Sauvegarder le résultat pour chaque ligne
-        results[f"Ligne {i}"] = ', '.join(comparison_results)
-    
+                results[column_key] = f'{col1}:ok'
+
     return results
 
 @pytest.fixture(scope='module')
 def files():
     """Renvoie les chemins des fichiers à tester."""
-    file1 = os.environ.get('RO')  # Chemin du premier fichier à tester
-    file2 = os.environ.get('RP')  # Chemin du second fichier à tester
+    # Chemin du fichier 1
+    file1 = '/home/amine/dev/test-compare-file/file1.txt'
+    file2 = '/home/amine/dev/test-compare-file/file2.txt'
     return file1, file2
 
 def test_files_exist(files):
@@ -87,3 +85,17 @@ def test_detailed_comparison(files):
     differences_found = any('ko' in result for result in detailed_result.values())
     assert not differences_found, f"Les fichiers {file1} et {file2} ont des différences : {detailed_result}"
 
+def test_column_comparisons(files):
+    """Test chaque colonne pour les différences."""
+    file1, file2 = files
+    
+    # Lire le contenu des fichiers
+    content_file1 = read_file(file1)
+    content_file2 = read_file(file2)
+
+    detailed_result = compare_content(content_file1, content_file2)
+    
+    # Vérifiez chaque ligne et colonne individuellement
+    for key, result in detailed_result.items():
+        if 'ko' in result:
+            assert False, f"Différence trouvée dans {key}: {result}"
