@@ -4,7 +4,7 @@ import os
 
 def read_file(file_path):
     """Lit le contenu d'un fichier et renvoie une liste de lignes."""
-    with open(file_path, 'r') as f:
+    with open(file_path, 'r', encoding='utf-8') as f:
         return f.readlines()
 
 def compare_content(file1_lines, file2_lines):
@@ -21,12 +21,12 @@ def compare_content(file1_lines, file2_lines):
     
     # Comparer ligne par ligne
     for i, (line1, line2) in enumerate(zip(file1_lines, file2_lines), 1):
-        columns1 = line1.strip().split()
-        columns2 = line2.strip().split()
+        columns1 = line1.strip().split(' ')  # Modifier ici si un autre séparateur est utilisé
+        columns2 = line2.strip().split(' ')  # Modifier ici si un autre séparateur est utilisé
         
         # Vérifier que chaque ligne a le même nombre de colonnes
         assert len(columns1) == len(columns2), (
-            f"Différence dans le nombre de colonnes à la ligne {i}:\n{file1_lines[i-1]} vs {file2_lines[i-1]}"
+            f"Différence dans le nombre de colonnes à la ligne {i}:\n{line1.strip()} vs {line2.strip()}"
         )
         
         # Comparer colonne par colonne
@@ -74,7 +74,7 @@ def test_detailed_comparison(files):
     # Vérifier les différences
     if detailed_result:
         differences_message = "Les fichiers {} et {} ont des différences :\n".format(file1, file2)
-        for column, comparison in detailed_result.items():
+        for column, comparison in differences_message.items():
             differences_message += f"  {column}: {comparison}\n"
         raise AssertionError(differences_message)
 
