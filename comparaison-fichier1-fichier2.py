@@ -88,13 +88,33 @@ def test_detailed_comparison(files):
     # Comparaison ligne par ligne et colonne par colonne
     detailed_result = compare_content(content_file1, content_file2)
     
-    # Affichage des résultats détaillés
-    if detailed_result:
-        print("Différences trouvées :")
-        for column, comparison in detailed_result.items():
-            print(f'{column}: {comparison}')
+    # Affichage des résultats détaillés (uniquement les KO)
+    for column, comparison in detailed_result.items():
+        # Juste afficher la comparaison sans "Colonne"
+        print(comparison)  # Format souhaité
     
     # Vérifier les différences
     differences_found = any(result for result in detailed_result.values())
     assert not differences_found, f"Les fichiers {file1} et {file2} ont des différences : {detailed_result}"
+
+# def test_detailed_comparison(files):
+#     """Compare les fichiers avec une vérification ligne par ligne et colonne par colonne."""
+#     file1, file2 = files
+    
+#     # Lire le contenu des fichiers
+#     content_file1 = read_file(file1)
+#     content_file2 = read_file(file2)
+    
+#     # Comparaison ligne par ligne et colonne par colonne
+#     detailed_result = compare_content(content_file1, content_file2)
+    
+#     # Affichage des résultats détaillés
+#     if detailed_result:
+#         print("Différences trouvées :")
+#         for column, comparison in detailed_result.items():
+#             print(f'{column}: {comparison}')
+    
+#     # Vérifier les différences
+#     differences_found = any(result for result in detailed_result.values())
+#     assert not differences_found, f"Les fichiers {file1} et {file2} ont des différences : {detailed_result}"
 
