@@ -7,38 +7,6 @@ def read_file(file_path):
     with open(file_path, 'r') as f:
         return f.readlines()
 
-# def compare_content(file1_lines, file2_lines):
-#     """
-#     Compare deux fichiers ligne par ligne et colonne par colonne.
-#     Retourne un dictionnaire avec chaque clé et ses valeurs suivies du statut 'OK' ou 'KO'.
-#     """
-#     results = {}
-
-#     # Vérifier que les deux fichiers ont le même nombre de lignes
-#     assert len(file1_lines) == len(file2_lines), (
-#         f"Les fichiers ont un nombre de lignes différent : {len(file1_lines)} vs {len(file2_lines)}"
-#     )
-
-#     # Comparer ligne par ligne
-#     for i, (line1, line2) in enumerate(zip(file1_lines, file2_lines), 1):
-#         columns1 = line1.strip().split()
-#         columns2 = line2.strip().split()
-
-#         # Vérifier que chaque ligne a le même nombre de colonnes
-#         assert len(columns1) == len(columns2), (
-#             f"Différence dans le nombre de colonnes à la ligne {i}:\n{file1_lines[i-1]} vs {file2_lines[i-1]}"
-#         )
-
-#         # Comparer colonne par colonne
-#         for j, (col1, col2) in enumerate(zip(columns1, columns2)):
-#             column_key = f"Ligne {i} Colonne {j+1}"
-#             if col1 != col2:
-#                 results[column_key] = f'{col1}:ko vs {col2}:ko'
-#             else:
-#                 results[column_key] = f'{col1}:ok'
-
-#     return results
-
 def compare_content(file1_lines, file2_lines):
     """
     Compare deux fichiers ligne par ligne et colonne par colonne.
@@ -138,37 +106,12 @@ def test_detailed_comparison(files):
     # Joindre toutes les lignes pour le rapport
     report_message = "\n".join(report_lines)
     
-    # Afficher le message dans la sortie standard (ou l'envoyer à Xray)
+    # Afficher le message dans la sortie standard
     print(report_message)
     
     # Vérifier les différences
     differences_found = any('ko' in result for result in detailed_result.values())
     assert not differences_found, f"Les fichiers {file1} et {file2} ont des différences :\n{report_message}"
-
-
-# def test_detailed_comparison(files):
-#     """Compare les fichiers avec une vérification ligne par ligne et colonne par colonne."""
-#     file1, file2 = files
-
-#     # Lire le contenu des fichiers
-#     content_file1 = read_file(file1)
-#     content_file2 = read_file(file2)
-
-#     # Comparaison ligne par ligne et colonne par colonne
-#     detailed_result = compare_content(content_file1, content_file2)
-
-#     # Création d'un message de rapport formaté
-#     report_lines = []
-#     for line, comparison in detailed_result.items():
-#         report_lines.append(f'{line}: {comparison}')
-
-#     # Joindre toutes les lignes pour le rapport
-#     report_message = "\n".join(report_lines)
-#     # Afficher le message dans la sortie standard (ou l'envoyer à Xray)
-#     print(report_message)
-#     # Vérifier les différences
-#     differences_found = any('ko' in result for result in detailed_result.values())
-#     assert not differences_found, f"Les fichiers {file1} et {file2} ont des différences :\n{report_message}"
 
 def test_column_comparisons(files):
     """Test chaque colonne pour les différences."""
